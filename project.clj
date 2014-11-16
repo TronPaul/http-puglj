@@ -10,8 +10,8 @@
                  [org.clojure/tools.logging "0.3.1"]
                  [cheshire "5.3.1"]
                  [com.cemerick/friend "0.2.1"]]
-  :main ^:skip-aot http-puglj.core
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}}
-  :plugins [[lein-ring "0.8.13"]]
-  :ring {:handler http-puglj.core/handler})
+  :plugins [[lein-ring "0.8.13"]
+            [com.palletops/uberimage "0.3.0"]]
+  :ring {:handler http-puglj.core/handler :main http-puglj.core}
+  :main ^:skip-aot http-puglj.core)

@@ -1,5 +1,4 @@
 (ns http-puglj.core
-  (:gen-class)
   (:use [compojure.core :only [defroutes GET POST DELETE ANY context]]
         [compojure.handler :only [site]]
         [compojure.route :only [not-found]]
@@ -11,7 +10,8 @@
             [cemerick.friend :as friend]
             [cemerick.friend.openid :as openid]
             [ring.util.response :as resp])
-  (:import java.net.URI))
+  (:import java.net.URI)
+  (:gen-class :main true))
 
 (defonce server (atom nil))
 (defonce clients (atom {}))
