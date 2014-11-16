@@ -12,7 +12,7 @@
     <div id="header" align="right">
         <a href="/">Home</a> |
         {% if id %}
-        <a href="/user/{{id}}">Profile</a> |
+        <a href="/user/{{id.current}}">Profile</a> |
         <a href="/logout">Logout</a>
         {% else %}
         <form method="POST" action="{{login-action}}">
