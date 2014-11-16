@@ -5,21 +5,56 @@
         [compojure.route :only [not-found]]
         [selmer.parser :only [render-file]]
         org.httpkit.server)
-  (:require [ring.middleware.reload :as reload]))
+  (:require [ring.middleware.reload :as reload]
+            [clojure.tools.logging :as log]
+            [cheshire.core :refer [parse-string]]
+            [cemerick.friend :as friend]
+            [cemerick.friend.openid :as openid])
+  (:import java.net.URI))
+
+(defonce server (atom nil))
+(defonce clients (atom {}))
+(def steam-openid-url "http://steamcommunity.com/openid/")
 
 (defn dev-mode? []
   true)
 
-(defonce server (atom nil))
+(defn resolve-uri
+  [context uri]
+  (let [context (if (instance? URI context) context (URI. context))]
+    (.resolve context uri)))
+
+(defn context-uri
+  "Resolves a [uri] against the :context URI (if found) in the provided
+  Ring request. (Only useful in conjunction with compojure.core/context.)"
+  [{:keys [context]} uri]
+  (if-let [base (and context (str context "/"))]
+    (str (resolve-uri base uri))
+    uri))
 
 (defn index [req]
-  (render-file "index.html" {}))
+  (let [id (friend/identity req)]
+    (render-file "index.html" {:steam-openid-url steam-openid-url
+                               :login-action (context-uri req "login")
+                               :id id})))
+
+(defn msg-received [msg]
+  (let [data (parse-string msg)]
+    (log/debug "msg received" data)))
 
 (defn websocket [req]
-  nil)
+  (with-channel req channel
+    (if (websocket? channel)
+      (log/debug "Websocket channel")
+      (log/debug "HTTP channel"))
+    (swap! clients assoc channel true)
+    (on-receive channel #'msg-received)
+    (on-close channel (fn [status]
+                        (log/info channel "closed, status" status)))))
 
 (defn get-user-by-id [req]
-  "")
+  (let [steam-id (-> req :params :id)]
+    (render-file "user.html" {:steam-id steam-id})))
 
 (defroutes all-routes
   (GET "/" [] index)
@@ -33,10 +68,22 @@
     (@server :timeout 100)
     (reset! server nil)))
 
+(defn parse-identity [auth-map]
+  {:identity (last (re-find #"http://steamcommunity.com/openid/id/(\d+)" (:identity auth-map)))})
+
+(def secured-routes
+  (friend/authenticate
+    all-routes
+    {:default-landing-uri "/"
+     :workflows [(openid/workflow
+                   :openid-uri "/login"
+                   :credential-fn parse-identity
+                   :login-failure-handler login-failure-handler)]}))
+
 (def handler
   (if (dev-mode?)
-    (reload/wrap-reload (site #'all-routes))
-    (site all-routes)))
+    (reload/wrap-reload (site #'secured-routes))
+    (site secured-routes)))
 
 (defn -main
   "I don't do a whole lot ... yet."
