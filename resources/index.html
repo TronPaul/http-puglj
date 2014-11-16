@@ -4,19 +4,25 @@
 </head>
 <body>
 <div>
-    <div id="header">
-        <div id="fork-link" style="height: 149px">
-            <a href="https://github.com/TronPaul/http-puglj">
-                <img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png">
-            </a>
-        </div>
+    <div id="fork-link">
+        <a href="https://github.com/TronPaul/http-puglj">
+            <img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png">
+        </a>
+    </div>
+    <div id="header" align="right">
+        <a href="/">Home</a> |
+        {% if id %}
+        <a href="/user/{{id}}">Profile</a> |
+        <a href="/logout">Logout</a>
+        {% else %}
         <form method="POST" action="{{login-action}}">
-            <input type="hidden" name="identifier" value="{{steam-openid-url}}">
-            <input type="submit" src="http://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_small.png">
+            <input type="hidden" name="identifier" value="{{steam-openid-url}}"/>
+            <input type="image" src="http://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_small.png"/>
         </form>
-        </div>
-    <div id="status"></div>
-    <div id="chat">{{id}}</div>
+        {% endif %}
+    </div>
+    <div id="pug"></div>
+    <div id="chat"></div>
     <footer style="margin-top: 30px">
         <a href="https://github.com/TronPaul/http-puglj/issues">Report Bugs</a>
     </footer>

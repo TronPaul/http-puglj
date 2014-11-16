@@ -9,7 +9,8 @@
             [clojure.tools.logging :as log]
             [cheshire.core :refer [parse-string]]
             [cemerick.friend :as friend]
-            [cemerick.friend.openid :as openid])
+            [cemerick.friend.openid :as openid]
+            [ring.util.response :as resp])
   (:import java.net.URI))
 
 (defonce server (atom nil))
@@ -61,6 +62,8 @@
   (GET "/ws" [] websocket)
   (context "/user/:id" []
     (GET "/" [] get-user-by-id))
+  (GET "/logout" req
+    (friend/logout* (resp/redirect (str (:context req) "/"))))
   (not-found "<p>Page not found.</p>"))
 
 (defn stop-server []
@@ -69,7 +72,7 @@
     (reset! server nil)))
 
 (defn parse-identity [auth-map]
-  {:identity (last (re-find #"http://steamcommunity.com/openid/id/(\d+)" (:identity auth-map)))})
+  {:identity (Long/parseLong (last (re-find #"http://steamcommunity.com/openid/id/(\d+)" (:identity auth-map))))})
 
 (def secured-routes
   (friend/authenticate
@@ -77,8 +80,7 @@
     {:default-landing-uri "/"
      :workflows [(openid/workflow
                    :openid-uri "/login"
-                   :credential-fn parse-identity
-                   :login-failure-handler login-failure-handler)]}))
+                   :credential-fn parse-identity)]}))
 
 (def handler
   (if (dev-mode?)
