@@ -1,12 +1,12 @@
 (ns http-puglj.core
   (:use [compojure.core :only [defroutes GET POST DELETE ANY context]]
         [compojure.handler :only [site]]
-        [compojure.route :only [not-found]]
+        [compojure.route :only [files not-found]]
         [selmer.parser :only [render-file]]
         org.httpkit.server)
   (:require [ring.middleware.reload :as reload]
             [clojure.tools.logging :as log]
-            [cheshire.core :refer [parse-string]]
+            [cheshire.core :refer [parse-string generate-string]]
             [cemerick.friend :as friend]
             [cemerick.friend.openid :as openid]
             [ring.util.response :as resp])
@@ -39,9 +39,11 @@
                                :login-action (context-uri req "login")
                                :id id})))
 
-(defn msg-received [msg]
-  (let [data (parse-string msg)]
-    (log/debug "msg received" data)))
+(defn msg-received [ws-msg]
+  (let [data (parse-string ws-msg true)]
+    (if-let [chat-msg (:msg data)]
+      (doseq [client (keys @clients)]
+        (send! client (generate-string {:msg chat-msg}))))))
 
 (defn websocket [req]
   (with-channel req channel
@@ -49,9 +51,10 @@
       (log/debug "Websocket channel")
       (log/debug "HTTP channel"))
     (swap! clients assoc channel true)
-    (on-receive channel #'msg-received)
+    (on-receive channel msg-received)
     (on-close channel (fn [status]
-                        (log/info channel "closed, status" status)))))
+                        (log/info channel "closed, status" status)))
+    (send! channel (generate-string {:msg "Connected to chat!"}))))
 
 (defn get-user-by-id [req]
   (let [steam-id (-> req :params :id)]
@@ -64,6 +67,7 @@
     (GET "/" [] get-user-by-id))
   (GET "/logout" req
     (friend/logout* (resp/redirect (str (:context req) "/"))))
+  (files "" {:root "static"})
   (not-found "<p>Page not found.</p>"))
 
 (defn stop-server []

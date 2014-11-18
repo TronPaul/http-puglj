@@ -22,10 +22,19 @@
         {% endif %}
     </div>
     <div id="pug"></div>
-    <div id="chat"></div>
+    <div id="chat">
+        <h3>Chat</h3>
+        <div id="chat-history-wrap">
+            <ul id="chat-history"></ul>
+        </div>
+        <input id="chat-input"/>
+        <input type="button" value="send" id="send-message"/>
+    </div>
     <footer style="margin-top: 30px">
         <a href="https://github.com/TronPaul/http-puglj/issues">Report Bugs</a>
     </footer>
 </div>
+<script src="/jquery-2.1.1.js"></script>
+<script src="/main.js"></script>
 </body>
 </html>
