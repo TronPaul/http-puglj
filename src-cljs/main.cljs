@@ -16,7 +16,6 @@
 
 (set! (.-onmessage conn)
   (fn [e]
-    (.log js/console (.-data e))
     (let [new-msg (.parse js/JSON (.-data e))]
       (add-msg new-msg))))
 
