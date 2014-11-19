@@ -12,6 +12,8 @@
                  [org.clojure/tools.logging "0.3.1"]
                  [cheshire "5.3.1"]
                  [com.cemerick/friend "0.2.1"]]
+  :profiles {:test {:java-source-paths ["test/java"]
+                    :dependencies [[ring-mock "0.1.5"]]}}
   :target-path "target/%s"
   :plugins [[lein-cljsbuild "1.0.3"]]
   :cljsbuild {
