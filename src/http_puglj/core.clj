@@ -39,22 +39,25 @@
                                :login-action (context-uri req "login")
                                :id id})))
 
-(defn msg-received [ws-msg]
+(defn msg-received [id ws-msg]
   (let [data (parse-string ws-msg true)]
     (if-let [chat-msg (:msg data)]
-      (doseq [client (keys @clients)]
-        (send! client (generate-string {:msg chat-msg}))))))
+      (if id
+        (doseq [client (keys @clients)]
+          (send! client (generate-string {:msg chat-msg})))
+        (log/warn "Unauthed attempted to send message")))))
 
 (defn websocket [req]
-  (with-channel req channel
-    (if (websocket? channel)
-      (log/debug "Websocket channel")
-      (log/debug "HTTP channel"))
-    (swap! clients assoc channel true)
-    (on-receive channel msg-received)
-    (on-close channel (fn [status]
-                        (log/info channel "closed, status" status)))
-    (send! channel (generate-string {:msg "Connected to chat!"}))))
+  (let [id (friend/identity req)]
+    (with-channel req channel
+      (if (websocket? channel)
+        (log/debug "Websocket channel")
+        (log/debug "HTTP channel"))
+      (swap! clients assoc channel true)
+      (on-receive channel (partial msg-received id))
+      (on-close channel (fn [status]
+                          (log/info channel "closed, status" status)))
+      (send! channel (generate-string {:msg "Connected to chat!"})))))
 
 (defn get-user-by-id [req]
   (let [steam-id (-> req :params :id)]

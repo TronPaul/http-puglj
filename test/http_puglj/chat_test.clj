@@ -15,3 +15,11 @@
         (.messageReceived async-channel message)
         (is (= 2 (count (sent async-channel))))
         (is (= message (last (sent async-channel))))))))
+
+(deftest anon-send-message-fails-test
+  (testing "Cannot send a message when anonymous"
+    (let [message (generate-string {:msg "Test message"})
+          async-channel (mock-async-channel)]
+      (secured-routes (assoc (request :get "/ws") :async-channel async-channel))
+      (.messageReceived async-channel message)
+      (is (= 1 (count (sent async-channel)))))))
