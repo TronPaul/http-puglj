@@ -1,10 +1,13 @@
-(ns main)
+(ns main
+  (:require [clojure.string :as s]))
 
 (def input (js/$ "#chat-input"))
 (def history (js/$ "#chat-history"))
 
 (defn add-msg [msg]
-  (.append history (str "<li>" (.-msg msg) "</li>")))
+  (if (s/blank? (.-name msg))
+    (.append history (str "<li>" "<i>" (.-msg msg) "</i>" "</li>"))
+    (.append history (str "<li>" "<b>" (.-name msg) ":</b> " (.-msg msg) "</li>"))))
 
 (def conn
   (js/WebSocket. "ws://localhost:8080/ws"))

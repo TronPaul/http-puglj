@@ -4,7 +4,8 @@
         [compojure.route :only [files not-found]]
         [selmer.parser :only [render-file]]
         org.httpkit.server)
-  (:require [ring.middleware.reload :as reload]
+  (:require [http-puglj.steam :as steam]
+            [ring.middleware.reload :as reload]
             [clojure.tools.logging :as log]
             [cheshire.core :refer [parse-string generate-string]]
             [cemerick.friend :as friend]
@@ -44,7 +45,7 @@
     (if-let [chat-msg (:msg data)]
       (if id
         (doseq [client (keys @clients)]
-          (send! client (generate-string {:msg chat-msg})))
+          (send! client (generate-string {:msg chat-msg :name (steam/steam-name id)})))
         (log/warn "Unauthed attempted to send message")))))
 
 (defn websocket [req]
@@ -97,4 +98,6 @@
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
+  (if (< 0 (count args))
+    (reset! steam/api-key (first args)))
   (reset! server (run-server handler {:port 8080})))
