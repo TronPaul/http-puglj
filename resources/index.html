@@ -15,7 +15,7 @@
         <a href="/user/{{id.current}}">Profile</a> |
         <a href="/logout">Logout</a>
         {% else %}
-        <form method="POST" action="{{login-action}}">
+        <form method="POST" action="{{login-action}}" style="display: inline">
             <input type="hidden" name="identifier" value="{{steam-openid-url}}"/>
             <input type="image" src="http://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_small.png"/>
         </form>
