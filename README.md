@@ -1,5 +1,7 @@
 # http-puglj
 
+[![Build Status](https://travis-ci.org/TronPaul/http-puglj.svg?branch=master)](https://travis-ci.org/TronPaul/http-puglj)
+
 http server for TF2 pugs written in clojure
 
 ## Development
