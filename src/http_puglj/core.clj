@@ -36,11 +36,17 @@
     (str (resolve-uri base uri))
     uri))
 
+(defn template-base-variables [req]
+  {:id (friend/identity req)
+   :login-action "/login"
+   :steam-openid-url steam-openid-url})
+
 (defn index [req]
-  (let [id (friend/identity req)]
-    (render-file "index.html" {:steam-openid-url steam-openid-url
-                               :login-action (context-uri req "login")
-                               :id id})))
+  (render-file "index.html" (template-base-variables req)))
+
+(defn get-user-by-id [req]
+  (let [steam-id (-> req :params :id)]
+    (render-file "user.html" (merge (template-base-variables req) {:steam-id steam-id}))))
 
 (defn msg-received [id ws-msg]
   (let [data (parse-string ws-msg true)]
@@ -61,10 +67,6 @@
       (on-close channel (fn [status]
                           (log/info channel "closed, status" status)))
       (send! channel (generate-string {:msg "Connected to chat!"})))))
-
-(defn get-user-by-id [req]
-  (let [steam-id (-> req :params :id)]
-    (render-file "user.html" {:steam-id steam-id})))
 
 (defroutes all-routes
   (GET "/" [] index)
