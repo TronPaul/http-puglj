@@ -1,40 +1,17 @@
-<html xmlns="http://www.w3.org/1999/html">
-<head>
-    <title>TF2 Pugs</title>
-</head>
-<body>
-<div>
-    <div id="fork-link">
-        <a href="https://github.com/TronPaul/http-puglj">
-            <img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png">
-        </a>
+{% extends "base.html" %}
+{% block content %}
+<div id="pug"></div>
+<div id="chat">
+    <h3>Chat</h3>
+
+    <div id="chat-history-wrap">
+        <ul id="chat-history"></ul>
     </div>
-    <div id="header" align="right">
-        <a href="/">Home</a> |
-        {% if id %}
-        <a href="/user/{{id.current}}">Profile</a> |
-        <a href="/logout">Logout</a>
-        {% else %}
-        <form method="POST" action="{{login-action}}" style="display: inline">
-            <input type="hidden" name="identifier" value="{{steam-openid-url}}"/>
-            <input type="image" src="http://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_small.png"/>
-        </form>
-        {% endif %}
-    </div>
-    <div id="pug"></div>
-    <div id="chat">
-        <h3>Chat</h3>
-        <div id="chat-history-wrap">
-            <ul id="chat-history"></ul>
-        </div>
-        <input id="chat-input" name="message" {% if not id %}value="Log in to chat" disabled{% endif %}/>
-        <input id="send-message" type="button" value="send" {% if not id %}disabled{% endif %}/>
-    </div>
-    <footer style="margin-top: 30px">
-        <a href="https://github.com/TronPaul/http-puglj/issues">Report Bugs</a>
-    </footer>
+    <input id="chat-input" name="message" {% if not id %}value="Log in to chat" disabled{% endif %}/>
+    <input id="send-message" type="button" value="send" {% if not id %}disabled{% endif %}/>
 </div>
+{% endblock %}
+{% block script %}
 <script src="/jquery-2.1.1.js"></script>
 <script src="/main.js"></script>
-</body>
-</html>
+{% endblock %}
