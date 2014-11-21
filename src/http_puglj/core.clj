@@ -28,6 +28,7 @@
    :steam-openid-url steam-openid-url})
 
 (defn index [req]
+  (log/info "hot reload")
   (render-file "index.html" (template-base-variables req)))
 
 (defn get-user-by-id [req]
@@ -77,11 +78,6 @@
                    :openid-uri "/login"
                    :credential-fn steam/parse-identity)]}))
 
-(def handler
-  (if (dev-mode?)
-    (reload/wrap-reload (site #'secured-routes))
-    (site secured-routes)))
-
 (defn -main
   "Start puglj"
   [& args]
@@ -89,4 +85,7 @@
     (let [props-obj (p/load-from (io/file (first args)))
           props (p/properties->map props-obj true)]
       (reset! steam/api-key (:steam-api-key props))))
-  (reset! server (run-server handler {:port 8080})))
+  (let [handler (if (dev-mode?)
+                  (reload/wrap-reload (site #'secured-routes))
+                  (site secured-routes))]
+    (reset! server (run-server handler {:port 8080}))))
