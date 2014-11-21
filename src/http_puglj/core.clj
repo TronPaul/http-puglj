@@ -22,17 +22,19 @@
 (defn dev-mode? []
   true)
 
-(defn template-base-variables [req]
+(defn base-template-variables [req]
   {:id (friend/identity req)
    :login-action "/login"
    :steam-openid-url steam-openid-url})
 
 (defn index [req]
-  (render-file "index.html" (template-base-variables req)))
+  (render-file "index.html" (base-template-variables req)))
+
+(defn user-template-variables [req]
+  {:steam-id (Long/parseLong (-> req :params :id))})
 
 (defn get-user-by-id [req]
-  (let [steam-id (-> req :params :id)]
-    (render-file "user.html" (merge (template-base-variables req) {:steam-id steam-id}))))
+  (render-file "user.html" (merge (base-template-variables req) (user-template-variables req))))
 
 (defn msg-received [id ws-msg]
   (let [data (parse-string ws-msg true)]

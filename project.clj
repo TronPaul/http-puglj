@@ -12,6 +12,8 @@
                  [cheshire "5.3.1"]
                  [clojurewerkz/propertied "1.2.0"]
                  [com.cemerick/friend "0.2.1"]
+                 [org.clojure/core.memoize "0.5.6"]
+                 [org.clojure/core.cache "0.6.3"]
                  [org.clojure/tools.logging "0.3.1"]]
   :profiles {:test {:java-source-paths ["test/java"]
                     :dependencies [[ring-mock "0.1.5"]]}}
