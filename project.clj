@@ -15,6 +15,7 @@
                  [org.clojure/core.memoize "0.5.6"]
                  [org.clojure/core.cache "0.6.3"]
                  [org.clojure/tools.logging "0.3.1"]]
+  :aot [http-puglj.player-not-found-exception]
   :profiles {:test {:java-source-paths ["test/java"]
                     :dependencies [[ring-mock "0.1.5"]]}}
   :target-path "target/%s"

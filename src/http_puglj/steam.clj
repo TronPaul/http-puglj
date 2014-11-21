@@ -1,7 +1,9 @@
 (ns http-puglj.steam
-  (:require [org.httpkit.client :as http]
+  (:require [http-puglj.player-not-found-exception]
+            [org.httpkit.client :as http]
             [cheshire.core :refer [parse-string]]
-            [clojure.core.memoize :as memo]))
+            [clojure.core.memoize :as memo])
+  (:import [http_puglj.PlayerNotFoundException]))
 
 (defonce api-key (atom nil))
 (def summary-url "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/")
@@ -14,7 +16,7 @@
     (if (= 200 (:status resp))
       (if-let [ps (get-in (parse-string (:body resp) true) [:response :players 0])]
         ps
-        (throw (RuntimeException. "Player not found")))
+        (throw (PlayerNotFoundException. id)))
       (throw (RuntimeException. "Error retrieving GetPlayerSummaries")))))
 
 (def player-summary (memo/lru player-summary* :lru/threshold 10))
