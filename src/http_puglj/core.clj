@@ -28,7 +28,6 @@
    :steam-openid-url steam-openid-url})
 
 (defn index [req]
-  (log/info "hot reload")
   (render-file "index.html" (template-base-variables req)))
 
 (defn get-user-by-id [req]
