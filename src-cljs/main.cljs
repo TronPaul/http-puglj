@@ -3,6 +3,16 @@
 
 (def input (js/$ "#chat-input"))
 (def history (js/$ "#chat-history"))
+(def ws-url (let [loc (.-location js/window)
+                  protocol (if (= "https:" (.-protocol loc))
+                         "wss:"
+                         "ws:")
+                  hostname (.-hostname loc)
+                  port (.-port loc)]
+              (if (or (and (= "ws:" protocol) (= 80 port))
+                      (and (= "wss:" protocol (= 443 port))))
+                (str protocol "//" hostname "/ws")
+                (str protocol "//" hostname ":" port "/ws"))))
 
 (defn add-msg [msg]
   (if (s/blank? (.-name msg))
@@ -10,7 +20,7 @@
     (.append history (str "<li>" "<b>" (.-name msg) ":</b> " (.-msg msg) "</li>"))))
 
 (def conn
-  (js/WebSocket. "ws://localhost:8080/ws"))
+  (js/WebSocket. ws-url))
 
 (set! (.-onerror conn)
   (fn []
