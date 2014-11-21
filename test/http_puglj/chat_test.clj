@@ -8,7 +8,7 @@
 (deftest user-send-message-test
   (testing "Can send a message when logged in"
     (with-redefs [cemerick.friend/identity (fn [_] {:current 76561197999483354, :authentications {76561197999483354 {:identity 76561197999483354}}})
-                  http-puglj.steam/steam-name (fn [_] "TronPaul")]
+                  http-puglj.steam/player-summary (fn [_] {:personaname "TronPaul"})]
       (let [data {:msg "Test message"}
             recv-message (generate-string data)
             sent-message (assoc data :name "TronPaul")

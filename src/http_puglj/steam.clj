@@ -9,8 +9,11 @@
 (defn parse-identity [auth-map]
   {:identity (Long/parseLong (last (re-find #"http://steamcommunity.com/openid/id/(\d+)" (:identity auth-map))))})
 
-(defn steam-name [id]
+(defn player-summary [id]
   (let [resp @(http/get summary-url {:query-params {:key @api-key :steamids (str id)}})]
     (if (= 200 (:status resp))
-      (:personaname (get-in (parse-string (:body resp) true) [:response :players 0]))
-      (throw (RuntimeException. "Error retrieving name")))))
+      (get-in (parse-string (:body resp) true) [:response :players 0])
+      (throw (RuntimeException. "Error retrieving GetPlayerSummaries")))))
+
+(defn steam-name [id]
+  (:personaname (player-summary id)))
