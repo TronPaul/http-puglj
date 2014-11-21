@@ -64,11 +64,6 @@
   (files "" {:root "static"})
   (not-found "<p>Page not found.</p>"))
 
-(defn stop-server []
-  (when-not (nil? @server)
-    (@server :timeout 100)
-    (reset! server nil)))
-
 (def secured-routes
   (friend/authenticate
     all-routes
@@ -76,6 +71,11 @@
      :workflows [(openid/workflow
                    :openid-uri "/login"
                    :credential-fn steam/parse-identity)]}))
+
+(defn stop-server []
+  (when-not (nil? @server)
+    (@server :timeout 100)
+    (reset! server nil)))
 
 (defn -main
   "Start puglj"
