@@ -13,7 +13,6 @@
             [ring.util.response :as resp]
             [clojurewerkz.propertied.properties :as p]
             [clojure.java.io :as io])
-  (:import java.net.URI)
   (:gen-class :main true))
 
 (defonce server (atom nil))
