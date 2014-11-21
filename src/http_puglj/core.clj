@@ -79,16 +79,13 @@
     (@server :timeout 100)
     (reset! server nil)))
 
-(defn parse-identity [auth-map]
-  {:identity (Long/parseLong (last (re-find #"http://steamcommunity.com/openid/id/(\d+)" (:identity auth-map))))})
-
 (def secured-routes
   (friend/authenticate
     all-routes
     {:default-landing-uri "/"
      :workflows [(openid/workflow
                    :openid-uri "/login"
-                   :credential-fn parse-identity)]}))
+                   :credential-fn steam/parse-identity)]}))
 
 (def handler
   (if (dev-mode?)
