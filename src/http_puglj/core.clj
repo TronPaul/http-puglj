@@ -10,7 +10,9 @@
             [cheshire.core :refer [parse-string generate-string]]
             [cemerick.friend :as friend]
             [cemerick.friend.openid :as openid]
-            [ring.util.response :as resp])
+            [ring.util.response :as resp]
+            [clojurewerkz.propertied.properties :as p]
+            [clojure.java.io :as io])
   (:import java.net.URI)
   (:gen-class :main true))
 
@@ -93,8 +95,10 @@
     (site secured-routes)))
 
 (defn -main
-  "I don't do a whole lot ... yet."
+  "Start puglj"
   [& args]
   (if (< 0 (count args))
-    (reset! steam/api-key (first args)))
+    (let [props-obj (p/load-from (io/file (first args)))
+          props (p/properties->map props-obj true)]
+      (reset! steam/api-key (:steam-api-key props))))
   (reset! server (run-server handler {:port 8080})))
