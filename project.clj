@@ -17,7 +17,8 @@
                  [org.clojure/tools.logging "0.3.1"]]
   :java-source-paths ["src/main/java"]
   :source-paths ["src" "src/main/clj"]
-  :profiles {:test {:java-source-paths ["test/java"]
+  :test-paths ["test" "test/main/clj"]
+  :profiles {:test {:java-source-paths ["test/main/java"]
                     :dependencies [[ring-mock "0.1.5"]]}}
   :target-path "target/%s"
   :plugins [[lein-cljsbuild "1.0.3"]]
