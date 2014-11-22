@@ -1,9 +1,8 @@
 (ns http-puglj.steam
-  (:require [http-puglj.player-not-found-exception]
-            [org.httpkit.client :as http]
+  (:require [org.httpkit.client :as http]
             [cheshire.core :refer [parse-string]]
             [clojure.core.memoize :as memo])
-  (:import [http_puglj.PlayerNotFoundException]))
+  (:import (http_puglj.steam PlayerNotFoundException)))
 
 (defonce api-key (atom nil))
 (def summary-url "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/")
