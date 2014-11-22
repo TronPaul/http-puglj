@@ -13,7 +13,8 @@
             [ring.util.response :as resp]
             [clojurewerkz.propertied.properties :as p]
             [clojure.java.io :as io])
-  (:gen-class :main true))
+  (:gen-class :main true)
+  (:import (http_puglj.steam PlayerNotFoundException)))
 
 (defonce server (atom nil))
 (defonce clients (atom {}))
@@ -22,7 +23,7 @@
 (defn dev-mode? []
   true)
 
-(defn base-template-variables [req]
+(defn- base-template-variables [req]
   {:id (friend/identity req)
    :login-action "/login"
    :steam-openid-url steam-openid-url})
@@ -30,11 +31,17 @@
 (defn index [req]
   (render-file "index.html" (base-template-variables req)))
 
-(defn user-template-variables [req]
-  {:steam-id (Long/parseLong (-> req :params :id))})
+(defn- user-template-variables [req]
+  (let [steam-id (Long/parseLong (-> req :params :id))]
+    {:steam-id steam-id
+     :name (steam/steam-name steam-id)}))
 
 (defn get-user-by-id [req]
-  (render-file "user.html" (merge (base-template-variables req) (user-template-variables req))))
+  (try
+    (render-file "user.html" (merge (base-template-variables req) (user-template-variables req)))
+    (catch PlayerNotFoundException e
+           ; TODO: 404 template
+           {:status 404 :body "<p>User not found.</p>"})))
 
 (defn msg-received [id ws-msg]
   (let [data (parse-string ws-msg true)]
