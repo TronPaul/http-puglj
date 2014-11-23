@@ -39,9 +39,10 @@
 
 (defn- user-template-variables [req]
   (let [steam-id (Long/parseLong (-> req :params :id))
-        base (steam-variables steam-id)]
-    (if (steam/logs-tf? steam-id)
-      (assoc base :logs-tf-url (steam/make-logs-tf-url steam-id)))))
+        base (steam-variables steam-id)
+        logs-tf {:logs-tf-url (steam/logs-tf steam-id)}
+        ss {:ss-url (steam/ss steam-id)}]
+    (into {} (filter second (merge base logs-tf ss)))))
 
 (defn get-user-by-id [req]
   (try

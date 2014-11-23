@@ -7,6 +7,7 @@
 (defonce api-key (atom nil))
 (def summary-url "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/")
 (def logs-tf-url "http://logs.tf/json_search")
+(def ss-url "http://sizzlingstats.com/api/player/")
 
 (defn parse-identity [auth-map]
   {:identity (Long/parseLong (last (re-find #"http://steamcommunity.com/openid/id/(\d+)" (:identity auth-map))))})
@@ -27,6 +28,23 @@
     (if-let [logs (get (parse-string (:body resp) true) :logs)]
       (< 0 (count logs))
       false)))
+
+(defn logs-tf [id]
+  (if (logs-tf? id)
+    (make-logs-tf-url id)
+    nil))
+
+(defn make-ss-url [id]
+  (str "http://sizzlingstats.com/player/" id))
+
+(defn ss? [id]
+  (let [resp @(http/get (str ss-url id))]
+    (= 200 (:status resp))))
+
+(defn ss [id]
+  (if (ss? id)
+    (make-ss-url id)
+    nil))
 
 (def player-summary (memo/lru player-summary* :lru/threshold 10))
 
