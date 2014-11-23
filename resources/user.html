@@ -1,1 +1,17 @@
 {% extends "base.html" %}
+{% block content %}
+<div id="player-container">
+    <div id="player-top">
+        <img src="{{avatar-url}}"/><a href="{{profile-url}}"><h1>{{name}}</h1></a>
+    </div>
+    <div id="player-extended">
+        {% if logs-tf-url %}
+        <a href="{{logs-tf-url}}">logs.tf</a>
+        {% endif %}
+        {% if ss-url %}
+        {% endif %}
+        {% if ugc-url %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

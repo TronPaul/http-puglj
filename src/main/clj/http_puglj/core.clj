@@ -31,10 +31,17 @@
 (defn index [req]
   (render-file "index.html" (base-template-variables req)))
 
+(defn- steam-variables [steam-id]
+  {:steam-id steam-id
+   :name (steam/persona-name steam-id)
+   :avatar-url (steam/avatar steam-id)
+   :profile-url (steam/profile-url steam-id)})
+
 (defn- user-template-variables [req]
-  (let [steam-id (Long/parseLong (-> req :params :id))]
-    {:steam-id steam-id
-     :name (steam/steam-name steam-id)}))
+  (let [steam-id (Long/parseLong (-> req :params :id))
+        base (steam-variables steam-id)]
+    (if (steam/logs-tf? steam-id)
+      (assoc base :logs-tf-url (steam/make-logs-tf-url steam-id)))))
 
 (defn get-user-by-id [req]
   (try
@@ -48,7 +55,7 @@
     (if-let [chat-msg (:msg data)]
       (if id
         (doseq [client (keys @clients)]
-          (send! client (generate-string {:msg chat-msg :name (steam/steam-name id)})))
+          (send! client (generate-string {:msg chat-msg :name (steam/persona-name id)})))
         (log/warn "Unauthed attempted to send message")))))
 
 (defn websocket [req]

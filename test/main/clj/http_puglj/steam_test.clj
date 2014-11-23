@@ -6,4 +6,4 @@
 (deftest test-bad-player-id-throws-exception
   (testing "A bad player id throws a PlayerNotFoundException"
     (with-redefs [org.httpkit.client/get (fn [a b] (future {:status 200 :body "{\"response\":{\"players\":[]}}"}))]
-      (is (thrown? PlayerNotFoundException (steam-name (long 1337)))))))
+      (is (thrown? PlayerNotFoundException (persona-name (long 1337)))))))
