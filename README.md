@@ -8,14 +8,14 @@ http server for TF2 pugs written in clojure
 
 ### Requirements
 
-* java
+* jdk
 * lein
 
 ### Running a dev server
 
-    lein ring server
+    lein run
 
-This will start a development server on port 3000. It will also autoreload on code changes.
+This will start a development server on port 8080. It will also autoreload on code changes.
 
 ## Deployment
 
